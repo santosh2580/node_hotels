@@ -1,0 +1,4 @@
+# Ignore node_moduels directory
+node_moduels/
+
+#Other entries...
