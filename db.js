@@ -1,10 +1,12 @@
 const mongoose = require('mongoose');
+require('dotenv').config();
+
 
 // Define the MongoDB connection URL
-const url = 'mongodb://localhost:27017/hotels';
+const mongoURL = process.env.MONGODB_URL;
 
 // Connect to the database
-mongoose.connect(url, {
+mongoose.connect(mongoURL, {
     useNewUrlParser: true,
     useUnifiedTopology: true
 });
@@ -22,5 +24,5 @@ db.on('error', (err) => {
     console.error('MongoDB connection error:', err);
 });
 
-//export the database
+// Export the database connection
 module.exports = db;
