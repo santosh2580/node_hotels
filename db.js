@@ -10,9 +10,10 @@ if (!mongoURL) {
 
 const connectWithRetry = () => {
   console.log('MongoDB connection with retry');
-  return mongoose.connect(mongoURL, {
+  mongoose.connect(mongoURL, {
     useNewUrlParser: true,
-    useUnifiedTopology: true
+    useUnifiedTopology: true,
+    tls: true, // Ensure TLS/SSL is enabled
   });
 };
 
