@@ -1,28 +1,39 @@
 const mongoose = require('mongoose');
 require('dotenv').config();
 
-
-// Define the MongoDB connection URL
 const mongoURL = process.env.MONGODB_URL;
 
-// Connect to the database
-mongoose.connect(mongoURL, {
+if (!mongoURL) {
+  console.error('Error: MONGODB_URL is not defined in environment variables');
+  process.exit(1);
+}
+
+const connectWithRetry = () => {
+  console.log('MongoDB connection with retry');
+  return mongoose.connect(mongoURL, {
     useNewUrlParser: true,
     useUnifiedTopology: true
-});
+  });
+};
 
-// Get the default connection
+connectWithRetry();
+
 const db = mongoose.connection;
 
-// Bind connection to open event
 db.on('connected', () => {
-    console.log('Connected to MongoDB server');
+  console.log('Connected to MongoDB server');
 });
 
-// Bind connection to error event
 db.on('error', (err) => {
-    console.error('MongoDB connection error:', err);
+  console.error('MongoDB connection error:', err);
+  setTimeout(connectWithRetry, 5000); // Retry connection after 5 seconds
 });
 
-// Export the database connection
+process.on('SIGINT', () => {
+  db.close(() => {
+    console.log('MongoDB connection closed due to app termination');
+    process.exit(0);
+  });
+});
+
 module.exports = db;
